@@ -1,0 +1,31 @@
+{
+    "name": "bark-jm",
+    "main": "main.js",
+    "compatibility_date": "2026-03-01",
+    "compatibility_flags": [
+        "nodejs_compat"
+    ],
+    "observability": {
+        "enabled": true
+    },
+    "d1_databases": [
+        {
+            "binding": "database",
+            "database_name": "bark-jm-db",
+            "database_id": "<unique-ID-for-your-database>"
+        }
+    ],
+    "routes": [
+        {
+            "pattern": "bark.jmlapido.com",
+            "custom_domain": true
+        }
+    ],
+    "keep_vars": true,
+    "vars": {
+        "ALLOW_NEW_DEVICE": "true",
+        "ALLOW_QUERY_NUMS": "true",
+        "ROOT_PATH": "/"
+        // "BASIC_AUTH": "user:password"  // protects /info and /mcp
+    }
+}
