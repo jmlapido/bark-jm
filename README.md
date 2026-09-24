@@ -54,9 +54,17 @@ long as the zone lives in the same Cloudflare account.
 | `ALLOW_NEW_DEVICE` | `true` | Allow new Bark devices to self-register. Consider setting to `false` once all your devices are registered. |
 | `ALLOW_QUERY_NUMS` | `true` | Allow `/info` to report device counts. |
 | `ROOT_PATH` | `/` | Path prefix if you don't mount the server at the domain root. |
-| `BASIC_AUTH` | unset | `user:password` to protect `/info` and `/mcp`. Recommended — uncomment in `wrangler.jsonc`. |
+| `BASIC_AUTH` | unset | `user:password`. Protects `/info`, `/mcp`, and every per-device path (pushes and device-scoped MCP). `/register`, `/ping`, `/healthz` stay open regardless. |
 
 After changing `vars`, redeploy with `npm run deploy`.
+
+`BASIC_AUTH` is **not** set via `vars` (this file is committed to git). Set it
+as a Worker secret instead, which never touches the repo:
+
+```bash
+npx wrangler secret put BASIC_AUTH
+# paste "username:password" when prompted
+```
 
 ## Using it with the Bark app
 
@@ -70,6 +78,23 @@ curl "https://bark.jmlapido.com/<device_key>/Hello/World"
 
 See [Bark-Server API docs](https://github.com/Finb/bark-server) for the full
 push/register/ping API surface.
+
+## Connecting AI agents
+
+The worker includes an [MCP](https://modelcontextprotocol.io) server exposing
+one tool, `notify`, for agents that support MCP directly:
+
+```
+POST https://bark.jmlapido.com/<device_key>/mcp
+Authorization: Basic <base64(user:password)>   # required once BASIC_AUTH is set
+```
+
+For agents/tools that only run shell commands (most coding agents, CI jobs,
+etc.), use the [`skills/bark-notify`](skills/bark-notify/SKILL.md) skill
+instead — it POSTs to the plain push endpoint, needs no MCP support, and only
+needs `BARK_SERVER`, `BARK_DEVICE_KEY`, and `BARK_AUTH` set in the
+environment. Copy `skills/bark-notify/` into `~/.claude/skills/` (or your
+agent framework's equivalent) to make it available everywhere.
 
 ## Local development
 
