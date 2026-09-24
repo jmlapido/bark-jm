@@ -12,7 +12,7 @@
         {
             "binding": "database",
             "database_name": "bark-jm-db",
-            "database_id": "<unique-ID-for-your-database>"
+            "database_id": "aa02337a-5e94-4937-9bc0-dffaf7304142"
         }
     ],
     "routes": [
